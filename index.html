@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consola 911 San Pedro Sula</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="top-panel">
+            <div class="clock-block">
+                <span class="clock" id="liveClock">00:00:00</span>
+                <span class="status-dot live" title="Sistema en línea"></span>
+                <span class="dispatcher">Unidad 7 • Central San Pedro Sula</span>
+            </div>
+            <div class="top-controls">
+                <div class="control-cluster">
+                    <button class="mini-btn green" title="Disponible"></button>
+                    <button class="mini-btn gray" title="En espera"></button>
+                    <button class="mini-btn red" title="Cerrar sesión"></button>
+                </div>
+                <div class="control-cluster label-group">
+                    <span class="label">Incidentes</span>
+                    <span class="label">Historial</span>
+                    <span class="label">Registro</span>
+                    <span class="label">Contactos</span>
+                </div>
+                <div class="control-cluster">
+                    <a class="admin-link" href="admin.html" target="_blank" rel="noopener">Admin</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-grid">
+            <section class="queue-panel">
+                <header class="panel-header">
+                    <span class="panel-title">Cola Activa</span>
+                    <span class="panel-subtitle">Llamadas en espera • <strong id="queueCount">0</strong></span>
+                </header>
+                <section class="queue-stats" id="queueStats">
+                    <div class="stat">
+                        <span class="caption">Activas</span>
+                        <span class="value" id="statActive">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="caption">En Espera</span>
+                        <span class="value" id="statHold">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="caption">Cierre</span>
+                        <span class="value" id="statWrap">0</span>
+                    </div>
+                </section>
+                <section class="mini-map-block">
+                    <div class="mini-map-title">Mapa rápido</div>
+            <div class="mini-map-body">
+                <div class="mini-map-grid"></div>
+                <div class="mini-map-marker" id="miniMapMarker"></div>
+                <div class="mini-map-label" id="miniMapLabel">Sin selección</div>
+            </div>
+                </section>
+                <section class="queue-list" id="queueList">
+                    <!-- queue items rendered here -->
+                </section>
+            </section>
+
+            <section class="board-panel">
+                <header class="panel-header">
+                    <span class="panel-title">Panel de Consola</span>
+                    <span class="panel-subtitle">Llamadas en curso • <strong id="boardCount">0</strong></span>
+                </header>
+                <div class="board-tabs">
+                    <button class="tab active">En Vivo</button>
+                    <button class="tab">Comunidad</button>
+                    <button class="tab">Confirmadas</button>
+                </div>
+                <div class="board-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Línea</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Dirección</th>
+                                <th>Hora</th>
+                                <th>Duración</th>
+                                <th>Prioridad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="boardBody">
+                            <!-- board rows rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="dialer-panel">
+                <header class="panel-header">
+                    <span class="panel-title">Marcación Rápida</span>
+                    <span class="panel-subtitle">Detalle del incidente</span>
+                </header>
+                <div class="caller-card" id="callerCard">
+                    <div class="caller-name" id="callerName">Esperando llamada…</div>
+                    <div class="caller-field">
+                        <span class="field-label">Teléfono</span>
+                        <span class="field-value" id="callerPhone">—</span>
+                    </div>
+                    <div class="caller-field">
+                        <span class="field-label">Dirección</span>
+                        <span class="field-value" id="callerAddress">—</span>
+                    </div>
+                    <div class="caller-field">
+                        <span class="field-label">Estado</span>
+                        <span class="field-value" id="callerStatus">—</span>
+                    </div>
+                </div>
+                <div class="keypad">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button>*</button>
+                    <button>0</button>
+                    <button>#</button>
+                </div>
+                <div class="dial-controls">
+                    <button class="action send">Enviar</button>
+                    <button class="action clear">Limpiar</button>
+                </div>
+            </section>
+        </main>
+
+        <section class="map-panel">
+            <div class="map">
+                <div class="map-grid"></div>
+                <div class="map-overlay">
+                    <div class="locator-spin"></div>
+                    <div class="locator-label" id="mapLabel">Esperando ubicación…</div>
+                </div>
+            </div>
+            <div class="incident-card" id="incidentCard">
+                <div class="incident-title">Sin incidentes activos</div>
+                <div class="incident-meta">Los eventos entrantes aparecerán aquí.</div>
+            </div>
+        </section>
+    </div>
+    <div class="call-modal hidden" id="incomingModal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-glitch" aria-hidden="true">
+                <span class="glitch-band band-one"></span>
+                <span class="glitch-band band-two"></span>
+                <span class="glitch-band band-three"></span>
+                <span class="glitch-noise"></span>
+            </div>
+            <header class="modal-header">
+                <div>
+                    <div class="modal-eyebrow">Llamada entrante</div>
+                    <h2 class="modal-title" id="modalTitle">Desconocido</h2>
+                </div>
+                <div class="modal-indicator">
+                    <span class="pulse-dot"></span>
+                    <span class="pulse-dot"></span>
+                    <span class="pulse-dot"></span>
+                </div>
+            </header>
+            <div class="modal-body">
+                <div class="modal-wave" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="modal-body-content">
+                    <div class="modal-row">
+                        <span class="modal-label">Tipo</span>
+                        <span class="modal-value" id="modalType">—</span>
+                    </div>
+                    <div class="modal-row">
+                        <span class="modal-label">Ubicación</span>
+                        <span class="modal-value" id="modalLocation">—</span>
+                    </div>
+                    <div class="modal-row">
+                        <span class="modal-label">Cuadrante</span>
+                        <span class="modal-value" id="modalGrid">—</span>
+                    </div>
+                    <div class="modal-row">
+                        <span class="modal-label">Notas</span>
+                        <span class="modal-value" id="modalNotes">—</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-map">
+                <div class="modal-map-title">Localización estimada</div>
+                <div class="modal-map-body">
+                    <div class="modal-map-grid"></div>
+                    <div class="modal-map-marker" id="modalMapMarker"></div>
+                    <div class="modal-map-label" id="modalMapLabel">Sin datos</div>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button class="modal-btn decline" id="modalDecline">Ignorar</button>
+                <button class="modal-btn accept" id="modalAccept">Atender</button>
+            </footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

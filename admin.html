@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo • 911 San Pedro Sula</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-shell">
+        <header class="admin-header">
+            <div class="branding">
+                <h1>Panel Administrativo</h1>
+                <p>Control de simulación para la consola 911 de San Pedro Sula.</p>
+            </div>
+            <div class="header-actions">
+                <a class="link-button" href="index.html" target="_blank" rel="noopener">Abrir consola</a>
+                <button id="resetConfig" class="link-button danger">Restablecer</button>
+            </div>
+        </header>
+
+        <main class="admin-grid">
+            <section class="card">
+                <h2>Parámetros de tiempo</h2>
+                <form id="timingForm" class="form-grid">
+                    <div class="field">
+                        <label for="spawnIntervalMin">Intervalo mínimo de nuevas llamadas (ms)</label>
+                        <input type="number" id="spawnIntervalMin" name="spawnIntervalMin" min="500" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="spawnIntervalMax">Intervalo máximo de nuevas llamadas (ms)</label>
+                        <input type="number" id="spawnIntervalMax" name="spawnIntervalMax" min="500" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="decisionDelayMin">Retardo mínimo de decisión (ms)</label>
+                        <input type="number" id="decisionDelayMin" name="decisionDelayMin" min="200" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="decisionDelayMax">Retardo máximo de decisión (ms)</label>
+                        <input type="number" id="decisionDelayMax" name="decisionDelayMax" min="200" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="holdChance">Probabilidad pasar a espera (%)</label>
+                        <input type="number" id="holdChance" name="holdChance" min="0" max="100" step="1" data-scale="percent">
+                    </div>
+                    <div class="field">
+                        <label for="abandonChance">Probabilidad abandonada (%)</label>
+                        <input type="number" id="abandonChance" name="abandonChance" min="0" max="100" step="1" data-scale="percent">
+                    </div>
+                    <div class="field">
+                        <label for="holdReleaseMin">Tiempo mínimo en espera (ms)</label>
+                        <input type="number" id="holdReleaseMin" name="holdReleaseMin" min="1000" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="holdReleaseMax">Tiempo máximo en espera (ms)</label>
+                        <input type="number" id="holdReleaseMax" name="holdReleaseMax" min="1000" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="wrapMin">Duración mínima de llamada activa (ms)</label>
+                        <input type="number" id="wrapMin" name="wrapMin" min="1000" step="500">
+                    </div>
+                    <div class="field">
+                        <label for="wrapMax">Duración máxima de llamada activa (ms)</label>
+                        <input type="number" id="wrapMax" name="wrapMax" min="1000" step="500">
+                    </div>
+                    <div class="field">
+                        <label for="wrapClearMin">Tiempo mínimo en cierre (ms)</label>
+                        <input type="number" id="wrapClearMin" name="wrapClearMin" min="500" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="wrapClearMax">Tiempo máximo en cierre (ms)</label>
+                        <input type="number" id="wrapClearMax" name="wrapClearMax" min="500" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="abandonClearMin">Tiempo mínimo para limpiar abandono (ms)</label>
+                        <input type="number" id="abandonClearMin" name="abandonClearMin" min="200" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="abandonClearMax">Tiempo máximo para limpiar abandono (ms)</label>
+                        <input type="number" id="abandonClearMax" name="abandonClearMax" min="200" step="100">
+                    </div>
+                    <div class="field">
+                        <label for="totalCallSoftCap">Cap suavizado de llamadas activas</label>
+                        <input type="number" id="totalCallSoftCap" name="totalCallSoftCap" min="1" step="1">
+                    </div>
+                    <div class="field">
+                        <label for="spawnBiasThreshold">Sesgo para nuevas llamadas (0-1)</label>
+                        <input type="number" id="spawnBiasThreshold" name="spawnBiasThreshold" min="0" max="1" step="0.01">
+                    </div>
+                    <div class="field">
+                        <label for="initialCallsMin">Llamadas iniciales mínimas</label>
+                        <input type="number" id="initialCallsMin" name="initialCallsMin" min="0" step="1">
+                    </div>
+                    <div class="field">
+                        <label for="initialCallsMax">Llamadas iniciales máximas</label>
+                        <input type="number" id="initialCallsMax" name="initialCallsMax" min="0" step="1">
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="primary">Guardar cambios</button>
+                        <div id="timingStatus" class="status"></div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Datos de referencia</h2>
+                <form id="dataForm" class="form-grid">
+                    <div class="field wide">
+                        <label for="callerNames">Nombres de denunciantes (uno por línea)</label>
+                        <textarea id="callerNames" name="callerNames" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="callTypes">Tipos de llamada (uno por línea)</label>
+                        <textarea id="callTypes" name="callTypes" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="streetNames">Zonas / calles (uno por línea)</label>
+                        <textarea id="streetNames" name="streetNames" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="cityNames">Municipios (uno por línea)</label>
+                        <textarea id="cityNames" name="cityNames" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="notes">Notas de despacho (una por línea)</label>
+                        <textarea id="notes" name="notes" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="units">Unidades disponibles (una por línea)</label>
+                        <textarea id="units" name="units" rows="6"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="grids">Cuadrantes operativos (uno por línea)</label>
+                        <textarea id="grids" name="grids" rows="4"></textarea>
+                    </div>
+                    <div class="field wide">
+                        <label for="priorities">Códigos de prioridad (uno por línea)</label>
+                        <textarea id="priorities" name="priorities" rows="3"></textarea>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="primary">Guardar datos</button>
+                        <div id="dataStatus" class="status"></div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card actions">
+                <h2>Comandos instantáneos</h2>
+                <div class="actions-grid">
+                    <button class="link-button" data-command="spawn">Forzar llamada entrante</button>
+                    <button class="link-button" data-command="clearQueue">Limpiar cola</button>
+                    <button class="link-button" data-command="clearBoard">Limpiar tablero</button>
+                    <button class="link-button danger" data-command="resetAll">Reiniciar todo</button>
+                </div>
+                <p class="hint">Los cambios se reflejan en la consola abierta en otra ventana.</p>
+            </section>
+        </main>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>
