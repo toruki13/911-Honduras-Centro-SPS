@@ -51,7 +51,19 @@
             "Cooper Lagos"
         ],
         callTypes: [
-            "Person@ S#@#@32r"
+            "Incendio Estructural",
+            "Emergencia Médica",
+            "Incendio Vehicular",
+            "Colisión de Tránsito",
+            "Violencia Doméstica",
+            "Disparo de Alarma",
+            "Control Animal",
+            "Materiales Peligrosos",
+            "Rescate",
+            "Asalto",
+            "Ruido Excesivo",
+            "Robo en Proceso",
+
         ],
         streetNames: [
             "Col. Fesitranh",

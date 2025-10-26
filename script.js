@@ -17,6 +17,7 @@
     const miniMapLabelEl = document.getElementById("miniMapLabel");
     const miniMapMarkerEl = document.getElementById("miniMapMarker");
     const incomingModalEl = document.getElementById("incomingModal");
+    const modalWindowEl = incomingModalEl ? incomingModalEl.querySelector(".modal-window") : null;
     const modalTypeEl = document.getElementById("modalType");
     const modalLocationEl = document.getElementById("modalLocation");
     const modalGridEl = document.getElementById("modalGrid");
@@ -32,6 +33,8 @@
     let selectedCallId = null;
     let manualModalOpen = false;
     let pendingManualCall = null;
+    let glitchEnabled = false;
+    const MANUAL_CALL_TYPE = "Person@ S#@#@32r";
 
     const STORAGE_KEY = "sps911-admin-config";
     const COMMAND_KEY = "sps911-admin-command";
@@ -85,6 +88,18 @@
             "Cooper Lagos"
         ],
         callTypes: [
+            "Incendio Estructural",
+            "Emergencia Médica",
+            "Incendio Vehicular",
+            "Colisión de Tránsito",
+            "Violencia Doméstica",
+            "Disparo de Alarma",
+            "Control Animal",
+            "Materiales Peligrosos",
+            "Rescate",
+            "Asalto",
+            "Ruido Excesivo",
+            "Robo en Proceso",
             "P$rson@ dE$@9eY7@",
         ],
         streetNames: [
@@ -224,6 +239,16 @@
             return fallback;
         }
         return list[Math.floor(Math.random() * list.length)];
+    }
+
+    const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@%&?!";
+
+    function randomGlitchText(length) {
+        let result = "";
+        for (let i = 0; i < length; i += 1) {
+            result += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+        }
+        return result;
     }
 
     function formatPhone(num) {
@@ -478,6 +503,33 @@
         modalMapLabelEl.textContent = labelParts.join(" • ") || "Sin datos";
     }
 
+    function syncGlitchState() {
+        if (!modalWindowEl) {
+            return;
+        }
+        if (glitchEnabled) {
+            modalWindowEl.classList.add("glitch-on");
+        } else {
+            modalWindowEl.classList.remove("glitch-on");
+        }
+    }
+
+    function buildGlitchPayload() {
+        const chunk = (len) => randomGlitchText(len);
+        const street = `${chunk(3)}-${chunk(4)} ${chunk(2)}.Corridor`;
+        const city = `Sector ${chunk(2)}${chunk(1)}`;
+        const grid = `${chunk(2)}:${chunk(2)}`;
+        return {
+            caller: `Origen-${chunk(3)}`,
+            phone: `+${chunk(3)}-${chunk(4)}${chunk(2)}`,
+            street,
+            city,
+            grid,
+            notes: `Señal corrupta ${chunk(4)} ${chunk(3)}`,
+            units: `Unidad ${chunk(2)}`
+        };
+    }
+
     function handleCommand(rawValue) {
         if (!rawValue) {
             return;
@@ -625,23 +677,31 @@
         ) {
             return;
         }
+        const glitchData = buildGlitchPayload();
         pendingManualCall = createCall({
-            caller: "Desconocido",
-            phone: "No registrado",
-            units: "Por asignar",
+            caller: glitchData.caller,
+            phone: glitchData.phone,
+            street: glitchData.street,
+            city: glitchData.city,
+            grid: glitchData.grid,
+            notes: glitchData.notes,
+            units: glitchData.units,
+            type: MANUAL_CALL_TYPE,
             stage: "manual",
             status: "incoming"
         });
-        modalTypeEl.textContent = pendingManualCall.type;
-        modalLocationEl.textContent = `${pendingManualCall.street}, ${pendingManualCall.city}`;
-        modalGridEl.textContent = pendingManualCall.grid;
-        modalNotesEl.textContent = pendingManualCall.notes;
+        modalTypeEl.textContent = MANUAL_CALL_TYPE;
+        modalLocationEl.textContent = `${glitchData.street}, ${glitchData.city}`;
+        modalGridEl.textContent = glitchData.grid;
+        modalNotesEl.textContent = glitchData.notes;
         updateModalMap(pendingManualCall);
+        glitchEnabled = true;
         incomingModalEl.classList.remove("hidden");
         incomingModalEl.setAttribute("aria-hidden", "false");
         requestAnimationFrame(() => {
             incomingModalEl.classList.add("active");
         });
+        syncGlitchState();
         manualModalOpen = true;
     }
 
@@ -654,6 +714,8 @@
         manualModalOpen = false;
         pendingManualCall = null;
         updateModalMap(null);
+        glitchEnabled = false;
+        syncGlitchState();
         setTimeout(() => {
             if (!manualModalOpen && incomingModalEl) {
                 incomingModalEl.classList.add("hidden");
@@ -674,7 +736,6 @@
         call.activeSince = null;
         call.wrapSince = null;
         call.justUpdated = true;
-        call.units = call.units || "Por asignar";
         queue.unshift(call);
         selectedCallId = call.id;
         scheduleLifecycle(call);
@@ -756,6 +817,22 @@
     }
 
     document.addEventListener("keydown", (event) => {
+        const isBKey = event.code === "KeyB" || event.key === "b" || event.key === "B";
+        if (isBKey && !event.repeat) {
+            const modifierActive = event.metaKey || event.ctrlKey || event.altKey;
+            if (!modifierActive || event.metaKey || event.ctrlKey) {
+                event.preventDefault();
+                glitchEnabled = !glitchEnabled;
+                syncGlitchState();
+                return;
+            }
+        }
+        if (event.code === "KeyG" && event.altKey && !event.repeat) {
+            event.preventDefault();
+            glitchEnabled = !glitchEnabled;
+            syncGlitchState();
+            return;
+        }
         if (event.code === "Space" && !event.repeat && !manualModalOpen) {
             const target = event.target;
             const tagName = target && target.nodeName;
